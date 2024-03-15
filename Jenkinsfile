@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('SonarQube Analysis') {
+        /* stage('SonarQube Analysis') {
             steps {
                 sh 'sonar-scanner -Dsonar.projectKey=share-your-experience-frontend -Dsonar.sources=. -Dsonar.host.url=http://localhost:9000 -Dsonar.token=sqp_0748f118971f758c8eafa28f683154be8d1204d3'
             }
@@ -19,6 +19,6 @@ pipeline {
                 }
                 sh 'docker push hamou99/share-your-experience-frontend:latest'
             }
-        }
+        } */
     }
 }

@@ -263,7 +263,6 @@ body {
 }
 
 .login-btn:hover {
-  background-color: #6CB4EE;
   color: white;
   cursor: pointer;
 }
@@ -278,7 +277,6 @@ body {
 }
 
 .signup-btn:hover {
-  background-color: #ACE1AF;
   color: white;
   cursor: pointer;
 }
@@ -336,7 +334,7 @@ body {
   padding: 3% 3%;
   padding-bottom: 1%;
   margin: 0 auto;
-  width: 50%;
+  width: 20%;
   display: flex;
   flex-direction: column;
   align-items: center;
