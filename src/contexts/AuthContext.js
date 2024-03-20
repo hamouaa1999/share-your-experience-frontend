@@ -1,5 +1,6 @@
 import { createContext, useReducer, useState } from "react";
 import axios from "axios";
+import { SERVER_ADDRESS } from "../config";
 
 
 export const AuthContext = createContext()
@@ -24,12 +25,12 @@ export const AuthContextProvider = function({ children }) {
     const [firstRetrieveDone, setFirstRetrieveDone] = useState(false);
 
     if (!firstRetrieveDone) {
-        axios.get('http://localhost:5555/api/post/posts')
+        axios.get('http://' + SERVER_ADDRESS + ':5555/api/post/posts')
         .then((response) => {
             setFirstRetrieveDone(true);
             setPosts(response.data.posts);
         })
-        .catch((error) => console.log("Error getting posts"));
+        .catch(() => alert('Internal Server Error'));
     }
 
     return (

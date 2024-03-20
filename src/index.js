@@ -9,10 +9,10 @@ import {
 } from "react-router-dom";
 import { getPostsByTag } from './assets/posts';
 import { AuthContextProvider } from './contexts/AuthContext';
-import SignupForm from './components/SignupForm';
-import LoginForm from './components/LoginForm';
-import Profile from './components/Profile';
-import Post from './components/Post';
+import SignupForm from './screens/SignupForm';
+import LoginForm from './screens/LoginForm';
+import Profile from './screens/Profile';
+import Post from './screens/Post';
 
 const router = createBrowserRouter([
   {

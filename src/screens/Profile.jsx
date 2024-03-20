@@ -1,10 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import Card from "./Card";
+import Card from "../components/Card";
 import { AuthContext } from "../contexts/AuthContext";
 import { useLoaderData, useParams } from "react-router-dom";
-import SearchBar from "./SearchBar";
+import SearchBar from "../components/SearchBar";
 import axios from "axios";
-import AuthButtons from "./AuthButtons";
+import AuthButtons from "../components/AuthButtons";
+import { SERVER_ADDRESS } from "../config";
 
 const Profile = function() {
     
@@ -15,8 +16,8 @@ const Profile = function() {
     const { id } = useParams();
     
     const showPostsByTag = (tag) => {
-        window.history.pushState({}, null, 'http://localhost:3000/?search=' + tag);
-        window.history.pushState({}, null, 'http://localhost:3000/?search=' + tag);
+        window.history.pushState({}, null, 'http://' + SERVER_ADDRESS + ':3000/?search=' + tag);
+        window.history.pushState({}, null, 'http://' + SERVER_ADDRESS + ':3000/?search=' + tag);
         document.getElementById('search').value = tag
         setShowedPosts(posts.filter((post) => post.tags.includes(tag) && post.photographer == id));    
       }
@@ -27,13 +28,14 @@ const Profile = function() {
         if (loggedUser != null) {
             dispatch({type: 'LOGIN', payload: {...loggedUser}}, state);
         }
-        setShowedPosts(tag.length ? posts.filter((post) => post.tags.includes(tag) && post.photographer == id) : posts.filter((post) => post.photographer == id));
-        axios.get('http://localhost:5555/api/users/' + id)
+        setShowedPosts(tag.length ? posts.filter((post) => post.tags.includes(tag) && post.photographer == id)
+                                  : posts.filter((post) => post.photographer == id));
+        
+        axios.get('http://' + SERVER_ADDRESS + ':5555/api/users/' + id)
         .then((response) => {
-            console.log('Hamou: ' + response.data.user._id);
             setUser(response.data.user);
         })
-        .catch((error) => console.log("Error getting posts"));
+        .catch((error) => alert("Internal Server Error (" + error.response.status + ")"));
     }, [tag, posts])
 
     return (

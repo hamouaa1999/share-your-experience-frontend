@@ -11,7 +11,8 @@ export default function SearchBar({ tag }) {
                 replace: !(tag == null)
                 })}>
                     <div className="search-bar">
-                    <input id="search" className="search-field" type="text" placeholder="Search by tag..." name="search" defaultValue={tag} /> <button className="search-btn">🔍</button>
+                        <input id="search" className="search-field" type="text" placeholder="Search by tag..." name="search" defaultValue={tag} /> 
+                        <button className="search-btn">🔍</button>
                     </div>
             </Form>
         </div>

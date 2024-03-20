@@ -1,7 +1,8 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { socket } from "../sockets/socket";
+import { SERVER_ADDRESS } from "../config";
 
 
 function convertToBase64(file) {
@@ -33,7 +34,7 @@ const PostUpload = function() {
     const handleUpload = async () => {
         if (file != null) {
             const base = await convertToBase64(file);
-            axios.post('http://localhost:5555/api/post/posts', {
+            axios.post('http://' + SERVER_ADDRESS + ':5555/api/post/posts', {
                 "photographer": state.user ? state.user.user._id : '',
                 "first": state.user ? state.user.user.first : '',
                 "last": state.user ? state.user.user.last : '',
@@ -59,8 +60,6 @@ const PostUpload = function() {
         }
 
     }
-
-    const updateImage = async (file) => await convertToBase64(file);
 
     return (
         <>
@@ -115,7 +114,14 @@ const PostUpload = function() {
             </div>
             <div className="upload-share-btns">
                     <div>
-                        <input id="file-uploader" type="file" onChange={(e) => {document.getElementById('image-for-upload').src = URL.createObjectURL(e.target.files[0]); setFile(e.target.files[0]);}} />
+                        <input 
+                            id="file-uploader" 
+                            type="file" 
+                            onChange={(e) => {
+                                document.getElementById('image-for-upload').src = URL.createObjectURL(e.target.files[0]); 
+                                setFile(e.target.files[0]);
+                            }} 
+                        />
                     </div>
                 </div>
             </div>        

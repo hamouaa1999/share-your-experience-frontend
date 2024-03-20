@@ -1,13 +1,26 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useSubmit } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { Link } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { socket } from "../sockets/socket";
+import { SERVER_ADDRESS } from "../config";
+import $ from 'jquery'
+
+
+
+
+/**
+ * 
+ * A component responsible for showing post-related information 
+ * (image, description, number of views, number of likes, number of comments)
+ * 
+ * @param {*} props 
+ * @returns 
+ */
 
 export default function Card(props) {
 
-    const submit = useSubmit();
     const [post, setPost] = useState(props.post)
     const {state} = useContext(AuthContext);
     const [display, setDisplay] = useState(true);
@@ -16,13 +29,13 @@ export default function Card(props) {
 
 
     const showLikes = () => {
-        axios.get('http://localhost:5555/api/post/post/' + post._id + '/get-likers')
+
+        axios.get('http://' + SERVER_ADDRESS + ':5555/api/post/post/' + post._id + '/get-likers')
         .then((response) => {
             setLikers([...response.data.likers])
-            console.log(likers)
             document.getElementById('show-likes-container').style.display = 'flex';
         })
-        .catch((error) => console.log(error.message));
+        .catch((error) => alert("Internal Server Error (" + error.response.status + ")"));
     }
 
 
@@ -31,27 +44,22 @@ export default function Card(props) {
         socket.connect();
         socket.on('new like', (like) => {
             if (state.user && state.user.user._id != like.user && post._id == like.post) {
-                axios.get('http://localhost:5555/api/post/post/' + like.post)
-                .then((response) => {   
-                    console.log('HERE ' + response.data.post);
+                axios.get('http://' + SERVER_ADDRESS + ':5555/api/post/post/' + like.post)
+                .then((response) => {
                     setPost(response.data.post);
                 })
-                .catch((error) => console.log('Error: ' + error.message));
-            } else {
-                console.log("User is null!");
+                .catch((error) => alert("Internal Server Error (" + error.response.status + ")"));
             }
         })
 
         socket.on('new comment', (comment) => {
             if (state.user && state.user.user._id != comment.author && post._id == comment.post) {
-                axios.get('http://localhost:5555/api/post/post/' + comment.post)
+                axios.get('http://' + SERVER_ADDRESS + ':5555/api/post/post/' + comment.post)
                 .then((response) => {   
                     setPost(response.data.post);
                 })
-                .catch((error) => console.log('Error: ' + error.message));
-            } else {
-                console.log("User is null!");
-            }
+                .catch((error) => alert("Internal Server Error (" + error.response.status + ")"));
+            } 
         })
     }, [post]);
 
@@ -59,19 +67,17 @@ export default function Card(props) {
     const handleLike = () => {
         if (state.user) {
             if (!post.likes.includes(state.user.user._id)) {
-                console.log('Likes performed');
-                axios.put('http://localhost:5555/api/post/update/' + post._id, {
+                axios.put('http://' + SERVER_ADDRESS + ':5555/api/post/update/' + post._id, {
                     ...post,
                     likes: [...post.likes, state.user.user._id]
                 })
                 .then(() => {
-                    console.log('Likes incremented successfully');
                     socket.emit('new like', {user: state.user.user._id, post: post._id})
                     setPost({...post, likes: [...post.likes, state.user.user._id]})
                 })
-                .catch((error) => console.log(error.message));
+                .catch((error) => alert("Internal Server Error (" + error.response.status + ")"));
             } else {
-                alert("Already liked");
+                alert("You have already liked this post");
             }
         }   
     }
@@ -79,7 +85,7 @@ export default function Card(props) {
     const shareComment = () => {
         const comment = document.getElementById('comment-input-' + post._id).value;
         if (comment.length) {
-            axios.post('http://localhost:5555/api/comments/add-comment', {
+            axios.post('http://' + SERVER_ADDRESS + ':5555/api/comments/add-comment', {
                 author: state.user.user._id,
                 post: post._id,
                 content: comment
@@ -88,12 +94,10 @@ export default function Card(props) {
                 document.getElementById('comment-input-' + post._id).style.display = 'none';
                 document.getElementById('comment-input-' + post._id).value = '';
                 document.getElementById('comment-share-btn-' + post._id).style.display = 'none';
-                console.log(state.user.user._id);
                 socket.emit('new comment', {comment: comment, author: state.user.user._id, post: post._id});
                 setPost({...post, comments: post.comments + 1});
-                console.log('comments updated');
             })
-            .catch((error) => console.log(error));
+            .catch((error) => alert("Internal Server Error (" + error.response.status + ")"));
         } else {
             alert('Empty comment!');
         }
@@ -114,9 +118,20 @@ export default function Card(props) {
     return (
         <div className="card">
             <img className='image' src={post.image} alt="" onClick={() => navigate('/posts/' + post._id)} />
-            <div className="card-title">📷 <Link to={`/users/${post.photographer}`}><b>{post.first} {post.last}</b></Link></div>
+            <div className="card-title">
+                📷 
+                <Link to={`/users/${post.photographer}`}>
+                    <b>{post.first} {post.last}</b>
+                </Link>
+            </div>
             <div className="post-description-paragraph-container">
-                <p className="post-description-paragraph" maxlength="10">📜{post.description.length > 100 ? post.description.slice(0, 100) + "..." : post.description}</p>
+                <p 
+                    className="post-description-paragraph" 
+                    maxlength="10"
+                >
+                        📜
+                        {post.description.length > 100 ? post.description.slice(0, 100) + "..." : post.description}
+                </p>
             </div>
             <hr />
             

@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
-import AuthButtons from "./AuthButtons";
+import AuthButtons from "../components/AuthButtons";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
+import { SERVER_ADDRESS } from "../config";
 
 const LoginForm = function() {
 
@@ -12,7 +13,7 @@ const LoginForm = function() {
     const {state, dispatch} = useContext(AuthContext);
 
     const handleLogin = (email, password) => {
-        axios.post('http://localhost:5555/api/auth/login', {
+        axios.post('http://' + SERVER_ADDRESS + ':5555/api/auth/login', {
             email: email,
             password: password
           })
@@ -23,7 +24,7 @@ const LoginForm = function() {
             navigate('/');
           })
           .catch(function (error) {
-            console.log(error);
+            alert("Internal Server Error (" + error.response.status + ")");
           });
     }
 
@@ -44,7 +45,9 @@ const LoginForm = function() {
                         <input className="auth-input" type="password" placeholder="Enter password here..." onChange={(e) => setPassword(e.target.value)} />
                     </div>
                     <div className="login-btn-container">
-                    <button className="login-btn" onClick={() => handleLogin(email, password)}><img className="login-img" src="https://static.thenounproject.com/png/587164-200.png" alt="" /></button>
+                        <button className="login-btn" onClick={() => handleLogin(email, password)}>
+                            <img className="login-img" src="https://static.thenounproject.com/png/587164-200.png" alt="" />
+                        </button>
                     </div>
                 </div>
             </div>
